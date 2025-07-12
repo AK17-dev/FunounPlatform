@@ -1,26 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAdmin } from "@/contexts/AdminContext";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { Lock, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { isAuthenticated, login, loading } = useAdmin();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/admin/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    // TODO: Implement actual Supabase auth
-    setTimeout(() => {
-      setLoading(false);
-      alert("Admin authentication will be implemented with Supabase!");
-    }, 1000);
+    const success = await login(password);
+
+    if (success) {
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+      navigate("/admin/dashboard");
+    } else {
+      toast({
+        title: "Login failed",
+        description: "Invalid password. Please try again.",
+        variant: "destructive",
+      });
+      setPassword("");
+    }
   };
 
   return (
