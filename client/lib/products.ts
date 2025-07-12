@@ -61,17 +61,36 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 export async function uploadProductImage(file: File): Promise<string> {
+  // Validate file type
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error(
+      "Invalid file type. Please upload a JPEG, PNG, or WebP image.",
+    );
+  }
+
+  // Validate file size (max 5MB)
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new Error(
+      "File size too large. Please upload an image smaller than 5MB.",
+    );
+  }
+
   const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}.${fileExt}`;
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
   const filePath = `product-images/${fileName}`;
 
   const { error: uploadError } = await supabase.storage
     .from("product-images")
-    .upload(filePath, file);
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
 
   if (uploadError) {
     console.error("Error uploading image:", uploadError);
-    throw uploadError;
+    throw new Error(`Failed to upload image: ${uploadError.message}`);
   }
 
   const { data } = supabase.storage
@@ -82,15 +101,29 @@ export async function uploadProductImage(file: File): Promise<string> {
 }
 
 export async function deleteProductImage(imageUrl: string): Promise<void> {
-  const url = new URL(imageUrl);
-  const filePath = url.pathname.split("/").slice(-2).join("/");
+  try {
+    // Extract file path from the URL
+    const url = new URL(imageUrl);
+    const pathParts = url.pathname.split("/");
+    const bucketIndex = pathParts.indexOf("product-images");
 
-  const { error } = await supabase.storage
-    .from("product-images")
-    .remove([filePath]);
+    if (bucketIndex === -1) {
+      console.warn("Invalid image URL format:", imageUrl);
+      return;
+    }
 
-  if (error) {
-    console.error("Error deleting image:", error);
-    throw error;
+    const filePath = pathParts.slice(bucketIndex).join("/");
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .remove([filePath]);
+
+    if (error) {
+      console.error("Error deleting image:", error);
+      throw new Error(`Failed to delete image: ${error.message}`);
+    }
+  } catch (error) {
+    console.error("Error in deleteProductImage:", error);
+    // Don't throw for image deletion errors to prevent blocking product deletion
   }
 }
