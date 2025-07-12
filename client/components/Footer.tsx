@@ -8,7 +8,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="font-serif text-2xl font-bold text-primary">
-              Artisan
+              FunounByFatima
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Creating beautiful, handmade products with traditional
