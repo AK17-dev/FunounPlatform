@@ -23,9 +23,9 @@ export function Footer() {
               Get in Touch
             </h4>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>Email: hello@artisan.com</p>
-              <p>Phone: (555) 123-4567</p>
+              <p>WhatsApp: +961 76 322 468</p>
               <p>Follow us on social media for updates</p>
+              <p>Instagram: @funoun_by_fatima</p>
             </div>
           </div>
 
