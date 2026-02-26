@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+
 export function Hero() {
   return (
     <section className="artisan-gradient py-16 sm:py-24 lg:py-32">
@@ -11,6 +14,14 @@ export function Hero() {
             love and attention to detail. Each piece tells a story of
             traditional craftsmanship and modern design.
           </p>
+          <div className="mb-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button asChild size="lg">
+              <Link to="/custom-order">Request Custom Design</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/track">Track Your Order</Link>
+            </Button>
+          </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -22,11 +33,12 @@ export function Hero() {
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <span>Local artisans</span>
+              <span>Since 2019</span>
             </div>
           </div>
         </div>
       </div>
+      <img src="/sign.jpg" alt="" className="w-35 h-20 rounded-full object-cover" />
     </section>
   );
 }

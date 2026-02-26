@@ -14,7 +14,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Simple password-based authentication (in production, use Supabase Auth)
-  const ADMIN_PASSWORD = "funoun2024"; // You can change this
+  const ADMIN_PASSWORD = "aboude2024"; // You can change this
 
   useEffect(() => {
     // Check if admin is already logged in

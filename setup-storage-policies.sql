@@ -31,3 +31,14 @@ FOR DELETE USING (bucket_id = 'product-images' AND auth.role() = 'authenticated'
 
 -- CREATE POLICY "Allow anonymous delete to product images" ON storage.objects 
 -- FOR DELETE USING (bucket_id = 'product-images');
+
+-- Custom orders reference images bucket (custom-orders)
+-- Create this bucket in Storage dashboard and set it to public before applying policies.
+
+DROP POLICY IF EXISTS "Public read access for custom order images" ON storage.objects;
+CREATE POLICY "Public read access for custom order images" ON storage.objects
+FOR SELECT USING (bucket_id = 'custom-orders');
+
+DROP POLICY IF EXISTS "Allow anonymous upload to custom order images" ON storage.objects;
+CREATE POLICY "Allow anonymous upload to custom order images" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'custom-orders');

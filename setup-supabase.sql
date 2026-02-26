@@ -44,6 +44,37 @@ CREATE TRIGGER handle_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_updated_at();
 
+-- Create custom orders table
+CREATE TABLE IF NOT EXISTS public.custom_orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tracking_code TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    product_type TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity >= 1),
+    colors TEXT,
+    custom_text TEXT,
+    notes TEXT,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'ready')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable Row Level Security for custom orders
+ALTER TABLE public.custom_orders ENABLE ROW LEVEL SECURITY;
+
+-- Policies for custom orders
+DROP POLICY IF EXISTS "Allow public read access to custom orders" ON public.custom_orders;
+CREATE POLICY "Allow public read access to custom orders" ON public.custom_orders
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert to custom orders" ON public.custom_orders;
+CREATE POLICY "Allow public insert to custom orders" ON public.custom_orders
+    FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public update to custom orders" ON public.custom_orders;
+CREATE POLICY "Allow public update to custom orders" ON public.custom_orders
+    FOR UPDATE USING (true);
+
 -- Insert some sample products for demonstration
 INSERT INTO public.products (name, price, description, image_url) VALUES
 ('Handmade Ceramic Mug', 28.99, 'Beautiful handcrafted ceramic mug with unique glaze patterns. Perfect for your morning coffee or tea. Each piece is unique and made with love by local artisans.', 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800&h=800&fit=crop'),

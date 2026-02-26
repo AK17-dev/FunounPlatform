@@ -4,22 +4,38 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductManagement } from "@/components/ProductManagement";
+import { CustomOrdersManagement } from "@/components/CustomOrdersManagement";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getProducts } from "@/lib/products";
-import { Package, Users, BarChart3, LogOut, Upload } from "lucide-react";
+import { getCustomOrders } from "@/lib/customOrders";
+import { Package, Users, BarChart3, LogOut, Upload, ClipboardList } from "lucide-react";
 
 export default function AdminDashboard() {
   const [productCount, setProductCount] = useState(0);
+  const [customOrderCount, setCustomOrderCount] = useState(0);
   const { logout } = useAdmin();
 
   useEffect(() => {
     const loadStats = async () => {
-      try {
-        const products = await getProducts();
+      const [productsResult, customOrdersResult] = await Promise.allSettled([
+        getProducts(),
+        getCustomOrders(),
+      ]);
+
+      if (productsResult.status === "fulfilled") {
+        const products = productsResult.value;
         setProductCount(products.length);
-      } catch (error) {
-        console.error("Error loading stats:", error);
+      } else {
+        console.error("Error loading product stats:", productsResult.reason);
+      }
+
+      if (customOrdersResult.status === "fulfilled") {
+        const orders = customOrdersResult.value;
+        setCustomOrderCount(orders.length);
+      } else {
+        console.error("Error loading custom order stats:", customOrdersResult.reason);
       }
     };
 
@@ -75,12 +91,10 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Categories
-                      </p>
-                      <p className="text-2xl font-bold">Handmade</p>
+                      <p className="text-sm text-muted-foreground">Custom Orders</p>
+                      <p className="text-2xl font-bold">{customOrderCount}</p>
                     </div>
-                    <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                    <ClipboardList className="h-8 w-8 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
@@ -108,8 +122,26 @@ export default function AdminDashboard() {
               </Card>
             </div>
 
-            {/* Products Management */}
-            <ProductManagement />
+            <Tabs defaultValue="products" className="space-y-6">
+              <TabsList>
+                <TabsTrigger value="products">
+                  <Package className="h-4 w-4 mr-2" />
+                  Products
+                </TabsTrigger>
+                <TabsTrigger value="custom-orders">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Custom Orders
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="products">
+                <ProductManagement />
+              </TabsContent>
+
+              <TabsContent value="custom-orders">
+                <CustomOrdersManagement />
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
         <Footer />

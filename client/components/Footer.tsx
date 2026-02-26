@@ -46,8 +46,10 @@ export function Footer() {
         <div className="border-t border-border/50 mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
             Made with <Heart className="h-4 w-4 text-primary fill-current" /> by
-            local artisans
+            AK17 
+            
           </p>
+          <p>for website like this contact us on this number:76511373</p>
         </div>
       </div>
     </footer>
