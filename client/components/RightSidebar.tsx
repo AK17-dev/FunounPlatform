@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Facebook,
   Home,
   Instagram,
   LayoutDashboard,
@@ -115,8 +114,8 @@ export function RightSidebar() {
                 key={item.to}
                 to={item.to}
                 className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${active
-                    ? "bg-purple-500/20 text-white"
-                    : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
+                  ? "bg-purple-500/20 text-white"
+                  : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
                   }`}
               >
                 <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "scale-110" : ""}`}>
@@ -144,8 +143,8 @@ export function RightSidebar() {
           <Link
             to="/cart"
             className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${isActive("/cart")
-                ? "bg-purple-500/20 text-white"
-                : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
+              ? "bg-purple-500/20 text-white"
+              : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
               }`}
           >
             <span className="relative transition-transform duration-200 group-hover:scale-110">
@@ -189,16 +188,16 @@ export function RightSidebar() {
             <span className="text-[13px] font-medium">WhatsApp</span>
           </a>
 
-          {/* Facebook */}
+          {/* X */}
           <a
-            href="https://www.facebook.com/share/18pStMaAAX/"
+            href="https://x.com/KhanjiDev"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 rounded-xl px-4 py-2.5
                        text-white/50 transition-all duration-200 hover:bg-white/[0.05] hover:text-white/90"
           >
-            <Facebook className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
-            <span className="text-[13px] font-medium">Facebook</span>
+            <X className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+            <span className="text-[13px] font-medium">X</span>
           </a>
         </div>
 
@@ -304,8 +303,8 @@ export function RightSidebar() {
                       to={item.to}
                       onClick={() => setMobileOpen(false)}
                       className={`group relative flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${active
-                          ? "bg-purple-500/20 text-white"
-                          : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
+                        ? "bg-purple-500/20 text-white"
+                        : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
                         }`}
                     >
                       <span className="transition-transform duration-200 group-hover:scale-110">
@@ -363,11 +362,11 @@ export function RightSidebar() {
                   <span className="text-sm font-medium">WhatsApp</span>
                 </a>
 
-                <a href="https://www.facebook.com/share/18pStMaAAX/" target="_blank" rel="noopener noreferrer"
+                <a href="https://x.com/KhanjiDev" target="_blank" rel="noopener noreferrer"
                   className="group flex items-center gap-3 rounded-xl px-4 py-3
                               text-white/50 transition-all duration-200 hover:bg-white/[0.05] hover:text-white/90">
-                  <Facebook className="h-5 w-5" />
-                  <span className="text-sm font-medium">Facebook</span>
+                  <X className="h-5 w-5" />
+                  <span className="text-sm font-medium">X</span>
                 </a>
               </div>
 
