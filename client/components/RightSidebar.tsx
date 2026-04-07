@@ -114,11 +114,10 @@ export function RightSidebar() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${
-                  active
+                className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${active
                     ? "bg-purple-500/20 text-white"
                     : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
-                }`}
+                  }`}
               >
                 <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "scale-110" : ""}`}>
                   {item.icon}
@@ -144,11 +143,10 @@ export function RightSidebar() {
           {/* Cart */}
           <Link
             to="/cart"
-            className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${
-              isActive("/cart")
+            className={`group relative flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${isActive("/cart")
                 ? "bg-purple-500/20 text-white"
                 : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
-            }`}
+              }`}
           >
             <span className="relative transition-transform duration-200 group-hover:scale-110">
               <ShoppingCart className="h-5 w-5" />
@@ -165,7 +163,7 @@ export function RightSidebar() {
 
           {/* Instagram */}
           <a
-            href="https://www.instagram.com/funoun_by_fatima?igsh=MXFvbWZ1eGh2djg4NA=="
+            href="https://www.instagram.com/abdelkaderkhanjii?igsh=MWk4dXdraDhjdDE2"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-3 rounded-xl px-4 py-2.5
@@ -305,11 +303,10 @@ export function RightSidebar() {
                       key={item.to}
                       to={item.to}
                       onClick={() => setMobileOpen(false)}
-                      className={`group relative flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                        active
+                      className={`group relative flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${active
                           ? "bg-purple-500/20 text-white"
                           : "text-white/50 hover:bg-white/[0.05] hover:text-white/90"
-                      }`}
+                        }`}
                     >
                       <span className="transition-transform duration-200 group-hover:scale-110">
                         {item.icon}
@@ -351,23 +348,23 @@ export function RightSidebar() {
                 </Link>
 
                 <a href="https://www.instagram.com/funoun_by_fatima?igsh=MXFvbWZ1eGh2djg4NA=="
-                   target="_blank" rel="noopener noreferrer"
-                   className="group flex items-center gap-3 rounded-xl px-4 py-3
+                  target="_blank" rel="noopener noreferrer"
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3
                               text-white/50 transition-all duration-200 hover:bg-white/[0.05] hover:text-white/90">
                   <Instagram className="h-5 w-5" />
                   <span className="text-sm font-medium">Instagram</span>
                 </a>
 
                 <a href="https://wa.me/96176511373" target="_blank" rel="noopener noreferrer"
-                   className="group flex items-center gap-3 rounded-xl px-4 py-3
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3
                               text-white/50 transition-all duration-200 hover:bg-white/[0.05] hover:text-white/90">
                   <img src="https://cdn.builder.io/api/v1/image/assets%2F3e1cfa77093d456fa9220d6a72e6b46f%2F14aff025dfec4490b3e2c7a489b951f0?format=webp&width=800"
-                       alt="WhatsApp" className="h-5 w-5 object-contain" />
+                    alt="WhatsApp" className="h-5 w-5 object-contain" />
                   <span className="text-sm font-medium">WhatsApp</span>
                 </a>
 
                 <a href="https://www.facebook.com/share/18pStMaAAX/" target="_blank" rel="noopener noreferrer"
-                   className="group flex items-center gap-3 rounded-xl px-4 py-3
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3
                               text-white/50 transition-all duration-200 hover:bg-white/[0.05] hover:text-white/90">
                   <Facebook className="h-5 w-5" />
                   <span className="text-sm font-medium">Facebook</span>
