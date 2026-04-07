@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -15,9 +15,13 @@ import { useToast } from "@/hooks/use-toast";
 import { ProductForm } from "./ProductForm";
 import { Plus, Edit, Trash2, Package, Loader2 } from "lucide-react";
 import type { Product } from "@shared/types";
-import { getProducts, deleteProduct, deleteProductImage } from "@/lib/products";
+import { getProducts, deleteProduct } from "@/lib/products";
 
-export function ProductManagement() {
+interface ProductManagementProps {
+  storeId?: string | null;
+}
+
+export function ProductManagement({ storeId }: ProductManagementProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -26,9 +30,15 @@ export function ProductManagement() {
   const { toast } = useToast();
 
   const loadProducts = async () => {
+    if (!storeId) {
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const data = await getProducts();
+      const data = await getProducts({ storeId: storeId ?? undefined });
       setProducts(data);
     } catch (error) {
       console.error("Error loading products:", error);
@@ -44,7 +54,7 @@ export function ProductManagement() {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [storeId]);
 
   const handleAddProduct = () => {
     setEditingProduct(undefined);
@@ -58,13 +68,8 @@ export function ProductManagement() {
 
   const handleDeleteProduct = async (product: Product) => {
     try {
-      // Delete the product image first
-      if (product.image_url) {
-        await deleteProductImage(product.image_url);
-      }
-
       // Delete the product from database
-      await deleteProduct(product.id);
+      await deleteProduct(product);
 
       toast({
         title: "Product deleted",
@@ -107,6 +112,7 @@ export function ProductManagement() {
     return (
       <ProductForm
         product={editingProduct}
+        storeId={storeId ?? undefined}
         onSuccess={handleFormSuccess}
         onCancel={handleFormCancel}
       />
@@ -118,13 +124,23 @@ export function ProductManagement() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-serif">Product Management</CardTitle>
-          <Button onClick={handleAddProduct}>
+          <Button onClick={handleAddProduct} disabled={!storeId}>
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Button>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {!storeId ? (
+            <div className="text-center py-12">
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-serif text-xl font-medium mb-2">
+                Select a store to manage products
+              </h3>
+              <p className="text-muted-foreground">
+                Choose a store to view and edit products.
+              </p>
+            </div>
+          ) : loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
@@ -225,3 +241,5 @@ export function ProductManagement() {
     </>
   );
 }
+
+

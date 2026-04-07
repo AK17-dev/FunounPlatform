@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,22 +6,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
-import type { Product } from "@shared/types";
+import type { Category, Product } from "@shared/types";
 import {
   createProduct,
   updateProduct,
   uploadProductImage,
   deleteProductImage,
 } from "@/lib/products";
+import { getCategories } from "@/lib/categories";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProductFormProps {
   product?: Product;
+  storeId?: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
 export function ProductForm({
   product,
+  storeId,
   onSuccess,
   onCancel,
 }: ProductFormProps) {
@@ -30,11 +40,27 @@ export function ProductForm({
     price: product?.price?.toString() || "",
     description: product?.description || "",
     image_url: product?.image_url || "",
+    category_id: product?.category_id || "",
+    discount_percentage: product?.discount_percentage?.toString() || "0",
   });
+  const [categories, setCategories] = useState<Category[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await getCategories(storeId ?? undefined);
+        setCategories(data);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+
+    loadCategories();
+  }, [storeId]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -54,7 +80,7 @@ export function ProductForm({
         await deleteProductImage(formData.image_url);
       }
 
-      const imageUrl = await uploadProductImage(file);
+      const imageUrl = await uploadProductImage(file, storeId ?? null);
       setFormData((prev) => ({ ...prev, image_url: imageUrl }));
 
       toast({
@@ -98,6 +124,15 @@ export function ProductForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!storeId) {
+      toast({
+        title: "Store not selected",
+        description: "Please select a store before creating a product.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (
       !formData.name.trim() ||
       !formData.price ||
@@ -107,6 +142,15 @@ export function ProductForm({
       toast({
         title: "Missing information",
         description: "Please fill in all fields and upload an image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.category_id) {
+      toast({
+        title: "Category required",
+        description: "Please select a category for this product.",
         variant: "destructive",
       });
       return;
@@ -122,6 +166,16 @@ export function ProductForm({
       return;
     }
 
+    const discount = parseFloat(formData.discount_percentage || "0");
+    if (isNaN(discount) || discount < 0 || discount > 100) {
+      toast({
+        title: "Invalid discount",
+        description: "Discount must be between 0 and 100.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       const productData = {
@@ -129,6 +183,9 @@ export function ProductForm({
         price,
         description: formData.description.trim(),
         image_url: formData.image_url,
+        store_id: storeId,
+        category_id: formData.category_id || null,
+        discount_percentage: discount,
       };
 
       if (product) {
@@ -234,19 +291,63 @@ export function ProductForm({
           </div>
 
           {/* Price */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (USD) *</Label>
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={handleInputChange}
+                placeholder="0.00"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="discount_percentage">Discount (%)</Label>
+              <Input
+                id="discount_percentage"
+                name="discount_percentage"
+                type="number"
+                step="1"
+                min="0"
+                max="100"
+                value={formData.discount_percentage}
+                onChange={handleInputChange}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="price">Price (USD) *</Label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={handleInputChange}
-              placeholder="0.00"
-              required
-            />
+            <Label>Category *</Label>
+            <Select
+              value={formData.category_id || "__none__"}
+              onValueChange={(value) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  category_id: value === "__none__" ? "" : value,
+                }))
+              }
+            >
+              <SelectTrigger className={!formData.category_id ? "border-muted-foreground/40" : ""}>
+                <SelectValue placeholder="Select a category (required)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__" disabled>
+                  Select a category (required)
+                </SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Description */}
@@ -297,3 +398,5 @@ export function ProductForm({
     </Card>
   );
 }
+
+

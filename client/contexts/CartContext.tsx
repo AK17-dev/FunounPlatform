@@ -1,4 +1,4 @@
-import React, {
+﻿import React, {
   createContext,
   useContext,
   useEffect,
@@ -10,8 +10,12 @@ const CART_STORAGE_KEY = "funoun_cart_items";
 
 export interface CartItem {
   product_id: string;
+  store_id?: string | null;
+  store_name?: string | null;
   name: string;
   price: number;
+  base_price?: number;
+  discount_percentage?: number | null;
   image: string;
   quantity: number;
   custom_text?: string;
@@ -19,8 +23,12 @@ export interface CartItem {
 
 interface AddToCartPayload {
   product_id: string;
+  store_id?: string | null;
+  store_name?: string | null;
   name: string;
   price: number;
+  base_price?: number;
+  discount_percentage?: number | null;
   image: string;
   quantity?: number;
   custom_text?: string;
@@ -31,11 +39,12 @@ interface CartContextType {
   itemCount: number;
   cartTotal: number;
   addToCart: (item: AddToCartPayload) => void;
-  removeFromCart: (productId: string, customText?: string) => void;
+  removeFromCart: (productId: string, customText?: string, storeId?: string | null) => void;
   updateQuantity: (
     productId: string,
     customText: string | undefined,
     quantity: number,
+    storeId?: string | null,
   ) => void;
   clearCart: () => void;
 }
@@ -47,8 +56,8 @@ function normalizeCustomText(value?: string) {
   return trimmed;
 }
 
-function itemKey(productId: string, customText?: string) {
-  return `${productId}::${normalizeCustomText(customText)}`;
+function itemKey(productId: string, customText?: string, storeId?: string | null) {
+  return `${storeId ?? ""}::${productId}::${normalizeCustomText(customText)}`;
 }
 
 function readInitialCart(): CartItem[] {
@@ -78,6 +87,13 @@ function readInitialCart(): CartItem[] {
       )
       .map((item) => ({
         ...item,
+        store_id: item.store_id ?? null,
+        store_name: item.store_name ?? null,
+        base_price: typeof item.base_price === "number" ? item.base_price : undefined,
+        discount_percentage:
+          typeof item.discount_percentage === "number"
+            ? item.discount_percentage
+            : null,
         quantity: Math.max(1, Math.floor(item.quantity)),
         custom_text: normalizeCustomText(item.custom_text) || undefined,
       }));
@@ -99,10 +115,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const normalizedCustomText = normalizeCustomText(item.custom_text);
 
     setCartItems((prev) => {
-      const key = itemKey(item.product_id, normalizedCustomText);
+      const key = itemKey(item.product_id, normalizedCustomText, item.store_id);
       const existingIndex = prev.findIndex(
         (existingItem) =>
-          itemKey(existingItem.product_id, existingItem.custom_text) === key,
+          itemKey(
+            existingItem.product_id,
+            existingItem.custom_text,
+            existingItem.store_id,
+          ) === key,
       );
 
       if (existingIndex === -1) {
@@ -110,8 +130,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           ...prev,
           {
             product_id: item.product_id,
+            store_id: item.store_id ?? null,
+            store_name: item.store_name ?? null,
             name: item.name,
             price: item.price,
+            base_price: item.base_price,
+            discount_percentage: item.discount_percentage ?? null,
             image: item.image,
             quantity: quantityToAdd,
             custom_text: normalizedCustomText || undefined,
@@ -127,11 +151,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const removeFromCart = (productId: string, customText?: string) => {
-    const key = itemKey(productId, customText);
+  const removeFromCart = (
+    productId: string,
+    customText?: string,
+    storeId?: string | null,
+  ) => {
+    const key = itemKey(productId, customText, storeId);
     setCartItems((prev) =>
       prev.filter(
-        (item) => itemKey(item.product_id, item.custom_text) !== key,
+        (item) => itemKey(item.product_id, item.custom_text, item.store_id) !== key,
       ),
     );
   };
@@ -140,16 +168,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     productId: string,
     customText: string | undefined,
     quantity: number,
+    storeId?: string | null,
   ) => {
     if (quantity <= 0) {
-      removeFromCart(productId, customText);
+      removeFromCart(productId, customText, storeId);
       return;
     }
 
-    const key = itemKey(productId, customText);
+    const key = itemKey(productId, customText, storeId);
     setCartItems((prev) =>
       prev.map((item) =>
-        itemKey(item.product_id, item.custom_text) === key
+        itemKey(item.product_id, item.custom_text, item.store_id) === key
           ? { ...item, quantity: Math.max(1, Math.floor(quantity)) }
           : item,
       ),
@@ -195,3 +224,5 @@ export function useCart() {
   }
   return context;
 }
+
+

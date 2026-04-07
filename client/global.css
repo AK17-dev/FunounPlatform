@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -160,4 +161,47 @@
       0 4px 16px -4px hsl(var(--foreground) / 0.08);
     transform: translateY(-2px);
   }
+}
+
+/* ── Brand name typography ───────────────────────────────────────── */
+.brand-name {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+  gap: 0.05em;
+}
+
+.latin-part {
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.arabic-part {
+  font-family: "Amiri", serif;
+  font-weight: 700;
+  font-size: 1.15em;
+  direction: rtl;
+  unicode-bidi: embed;
+  letter-spacing: 0;
+}
+
+/* ── Skeleton shimmer animation ─────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--accent)) 50%,
+      hsl(var(--muted)) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
 }

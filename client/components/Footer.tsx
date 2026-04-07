@@ -8,7 +8,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <h3 className="font-serif text-2xl font-bold text-primary">
-              FunounByFatima
+              Funoun/فنون
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Creating beautiful, handmade products with traditional
@@ -25,7 +25,7 @@ export function Footer() {
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>WhatsApp: +961 76 322 468</p>
               <p>Follow us on social media for updates</p>
-              <p>Instagram: @funoun_by_fatima</p>
+              <p>Instagram: @funoun</p>
             </div>
           </div>
 
@@ -46,8 +46,8 @@ export function Footer() {
         <div className="border-t border-border/50 mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
             Made with <Heart className="h-4 w-4 text-primary fill-current" /> by
-            AK17 
-            
+            AK17
+
           </p>
           <p>for website like this contact us on this number:76511373</p>
         </div>
