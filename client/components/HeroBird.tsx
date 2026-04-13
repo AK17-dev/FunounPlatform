@@ -255,7 +255,7 @@ export function HeroBird() {
     <div
       className="fixed z-50 pointer-events-auto
                  bottom-[12%] right-[4%]
-                 sm:bottom-auto sm:top-[50%] sm:right-[1%]
+                 sm:bottom-auto sm:top-[67%] sm:right-[1%]
                  scale-[0.6] sm:scale-75 lg:scale-100
                  origin-bottom-right sm:origin-top-right"
     >
