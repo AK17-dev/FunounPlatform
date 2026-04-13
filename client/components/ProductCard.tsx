@@ -163,11 +163,14 @@ export function ProductCard({ product, onFavoriteChange }: ProductCardProps) {
       <div className="p-6">
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
           <Store className="h-3.5 w-3.5" />
-          <span>{product.store?.name ?? "Funoun Store"}</span>
+          <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent font-bold text-base tracking-wide [-webkit-text-stroke:0.5px_black]">
+            {product.store?.name ?? "Funoun Store"}
+          </span>
           {product.category && (
             <Badge variant="outline" className="ml-auto text-xs text-muted-foreground py-0 h-5">
               {product.category.name}
             </Badge>
+            
           )}
         </div>
         <Link to={`/products/${product.id}`}>

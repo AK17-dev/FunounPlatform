@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { createStore, CreateStoreError } from "@/lib/stores";
+import { createStore, CreateStoreError, updateStore } from "@/lib/stores";
 import { ProductManagement } from "@/components/ProductManagement";
 import { OrdersManagement } from "@/components/OrdersManagement";
 import { StoreStaffManagement } from "@/components/StoreStaffManagement";
@@ -29,6 +29,12 @@ export default function OwnerDashboard() {
   const [storeName, setStoreName] = useState("");
   const [storeSlug, setStoreSlug] = useState("");
   const [creatingStore, setCreatingStore] = useState(false);
+  const [storeNameDraft, setStoreNameDraft] = useState("");
+  const [savingStoreName, setSavingStoreName] = useState(false);
+
+  useEffect(() => {
+    setStoreNameDraft(activeStore?.name ?? "");
+  }, [activeStore?.id, activeStore?.name]);
 
   const handleCreateStore = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +98,48 @@ export default function OwnerDashboard() {
       toast({ title, description, variant: "destructive" });
     } finally {
       setCreatingStore(false);
+    }
+  };
+
+  const handleUpdateStoreName = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!activeStoreId || !activeStore) {
+      return;
+    }
+
+    const nextName = storeNameDraft.trim();
+
+    if (!nextName) {
+      toast({
+        title: "Store name required",
+        description: "Please enter a store name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (nextName === activeStore.name) {
+      return;
+    }
+
+    try {
+      setSavingStoreName(true);
+      await updateStore(activeStoreId, { name: nextName });
+      await refreshStores();
+      toast({
+        title: "Store updated",
+        description: "Your store name has been updated.",
+      });
+    } catch (error) {
+      console.error("Error updating store name:", error);
+      toast({
+        title: "Update failed",
+        description: "Unable to update your store name. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingStoreName(false);
     }
   };
 
@@ -192,6 +240,38 @@ export default function OwnerDashboard() {
             </TabsContent>
 
             <TabsContent value="store">
+              {profile?.role === "owner" && activeStore && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="font-serif">Store Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleUpdateStoreName} className="grid gap-4 sm:max-w-md">
+                      <div className="space-y-2">
+                        <Label htmlFor="storeNameEdit">Store Name</Label>
+                        <Input
+                          id="storeNameEdit"
+                          value={storeNameDraft}
+                          onChange={(event) => setStoreNameDraft(event.target.value)}
+                          placeholder="e.g., Funoun Studio"
+                          required
+                        />
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full sm:w-fit"
+                        disabled={
+                          savingStoreName ||
+                          !storeNameDraft.trim() ||
+                          storeNameDraft.trim() === (activeStore.name ?? "")
+                        }
+                      >
+                        {savingStoreName ? "Saving..." : "Save Store Name"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              )}
               <Card>
                 <CardHeader>
                   <CardTitle className="font-serif">Store Summary</CardTitle>
@@ -213,5 +293,4 @@ export default function OwnerDashboard() {
     </div>
   );
 }
-
 
