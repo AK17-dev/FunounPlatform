@@ -1,4 +1,4 @@
-﻿import { supabase } from "./supabase";
+import { supabase } from "./supabase";
 
 export interface SignUpInput {
   email: string;
@@ -13,6 +13,8 @@ export interface SignInInput {
 }
 
 export async function signUp(input: SignUpInput) {
+  const defaultRedirect = `${import.meta.env.VITE_SITE_URL || window.location.origin}/login`;
+
   const { error } = await supabase.auth.signUp({
     email: input.email,
     password: input.password,
@@ -20,7 +22,7 @@ export async function signUp(input: SignUpInput) {
       data: {
         full_name: input.full_name ?? "",
       },
-      emailRedirectTo: input.emailRedirectTo,
+      emailRedirectTo: input.emailRedirectTo || defaultRedirect,
     },
   });
 
@@ -64,24 +66,7 @@ export async function resetPassword(email: string, emailRedirectTo?: string) {
     throw error;
   }
 }
-/*export async function resetPassword(email: string) {
-  const redirectUrl =
-    import.meta.env.VITE_SITE_URL
-      ? `${import.meta.env.VITE_SITE_URL}/update-password`
-      : "http://localhost:5173/update-password";
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: redirectUrl,
-  });
-
-  if (error) {
-    if (error.status === 429) {
-      throw new Error("Too many reset attempts. Please wait a minute and try again.");
-    }
-
-    throw error;
-  }
-}*/
 
 export async function updatePassword(newPassword: string) {
   const { error } = await supabase.auth.updateUser({

@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -36,7 +36,7 @@ export default function Register() {
         email: email.trim(),
         password,
         full_name: fullName.trim(),
-        emailRedirectTo: `${window.location.origin}/login`,
+        emailRedirectTo: `${import.meta.env.VITE_SITE_URL || window.location.origin}/login`,
       });
       toast({
         title: "Check your email",
